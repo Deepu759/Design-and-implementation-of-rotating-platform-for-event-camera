@@ -1,0 +1,67 @@
+#define dirPin 2
+#define stepPin 3
+#define stepsPerRevolution 200
+float speed = 0;
+int ang = 0;
+bool clockwise = true;
+void setup() {
+  // Declare pins as output:
+  pinMode(stepPin, OUTPUT);
+  pinMode(dirPin, OUTPUT);
+  Serial.begin(9600); // Initialize serial communication
+   digitalWrite(dirPin, HIGH);
+
+}
+
+void loop() {
+  // Set the spinning direction clockwise:
+ if (Serial.available() > 0) {
+   char val = Serial.read();
+  if( val == 'z')
+  {
+    digitalWrite(dirPin, LOW);
+    Serial.print("Counterclockwise");
+    clockwise = false;
+  }
+  if(val == 'x')
+  {
+    digitalWrite(dirPin, HIGH);
+    Serial.print("Clockwise");
+    clockwise=true;
+  }
+  if(val == 'a' && speed>0)speed--;
+  if(val == 's' && speed<100)speed++;
+ 
+ }
+
+  // Spin the stepper motor 5 revolutions fast:
+  for (int i = 0; i < 2; i++) {
+    // These four lines result in 1 step:
+    digitalWrite(stepPin, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(stepPin, LOW);
+    delayMicroseconds(500);
+  }
+
+  // Calculate angle in degrees
+  float angle = (360.0/200)*ang;; // 5 revolutions
+
+ // Serial.print("Clockwise direction, Angle: ");
+  Serial.print(angle);
+ Serial.println(" degrees");
+
+if(clockwise)
+{
+  ang++;
+if(ang>200)  ang =0;
+}
+
+if(!clockwise)
+{
+  ang--;
+if(ang<1)  ang =200;
+}
+delay(speed);
+
+ 
+}
